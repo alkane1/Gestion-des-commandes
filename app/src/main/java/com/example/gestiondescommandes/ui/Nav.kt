@@ -1,16 +1,26 @@
-package com.example.gestiondescommandes.ui
+﻿package com.example.gestiondescommandes.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.gestiondescommandes.MainViewModel
 import com.example.gestiondescommandes.R
@@ -24,11 +34,8 @@ private data class Dest(
 
 @Composable
 fun AppNav(vm: MainViewModel) {
-
     val navController = rememberNavController()
-    val state by vm.state.collectAsState()
-
-    // ✅ Déclarer urgentCount AVANT de l'utiliser
+    val state by vm.state.collectAsStateWithLifecycle()
     val urgentCount = state.orders.count { it.priority == Priority.URGENT }
 
     val tabs = listOf(
@@ -62,14 +69,14 @@ fun AppNav(vm: MainViewModel) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_truck),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary // ✅ couleur via thème
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         )
     )
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route ?: "orders"
+    val currentRoute = backStackEntry?.destination?.route?.substringBefore("/") ?: "orders"
     val isTabRoute = tabs.any { it.route == currentRoute }
 
     Scaffold(
@@ -94,13 +101,11 @@ fun AppNav(vm: MainViewModel) {
             }
         }
     ) { paddingValues ->
-
         NavHost(
             navController = navController,
             startDestination = "orders",
             modifier = Modifier
         ) {
-
             composable("orders") {
                 OrdersListScreenV2(
                     vm = vm,
@@ -125,9 +130,26 @@ fun AppNav(vm: MainViewModel) {
                 ConfigScreenV2(vm = vm, padding = paddingValues)
             }
 
+            composable(
+                route = "container/{index}",
+                arguments = listOf(navArgument("index") { type = NavType.IntType })
+            ) { entry ->
+                val index = entry.arguments?.getInt("index") ?: 0
+                val container = state.currentPlan?.containers?.getOrNull(index)
+
+                if (container != null) {
+                    ContainerScreen(
+                        container = container,
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                else Text("Conteneur introuvable")
+            }
+
             composable("plan") {
-                PlanScreenV2(vm = vm, padding = paddingValues)
+                PlanScreenV2(vm = vm, padding = paddingValues, navController = navController)
             }
         }
     }
 }
+

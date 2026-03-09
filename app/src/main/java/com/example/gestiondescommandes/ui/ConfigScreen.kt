@@ -1,35 +1,64 @@
 package com.example.gestiondescommandes.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gestiondescommandes.MainViewModel
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfigScreenV2(vm: MainViewModel, padding: PaddingValues) {
-    val state by vm.state.collectAsState()
-    var cfg by remember { mutableStateOf(state.config) }
+    val state by vm.state.collectAsStateWithLifecycle()
+    var cfg by remember(state.config) { mutableStateOf(state.config) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Conteneurs") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
                 actions = {
-                    TextButton(onClick = { vm.updateConfig(cfg) }) { Text("Sauvegarger") }
+                    TextButton(onClick = { vm.updateConfig(cfg) }) { Text("Sauvegarder") }
                 }
             )
         }
     ) { inner ->
         Column(
-            Modifier.padding(padding).padding(inner).padding(16.dp),
+            Modifier
+                .padding(padding)
+                .padding(inner)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             SettingCard(
-                title = "Capacité poids",
+                title = "Capacite poids",
                 subtitle = "${cfg.maxWeightKg.toInt()} kg"
             ) {
                 Slider(
@@ -40,8 +69,8 @@ fun ConfigScreenV2(vm: MainViewModel, padding: PaddingValues) {
             }
 
             SettingCard(
-                title = "Capacité volume",
-                subtitle = "${cfg.maxVolumeM3.toInt()} m³"
+                title = "Capacite volume",
+                subtitle = "${cfg.maxVolumeM3.toInt()} m3"
             ) {
                 Slider(
                     value = cfg.maxVolumeM3.toFloat(),
@@ -75,7 +104,7 @@ fun ConfigScreenV2(vm: MainViewModel, padding: PaddingValues) {
             HorizontalDivider()
 
             Text(
-                "Règles:\n• HIGH/URGENT partent immédiatement.\n• Conteneur sans priorité et sous le seuil → report.",
+                "Regles:\n- ELEVEE/URGENT partent immediatement.\n- Conteneur sans priorite et sous le seuil -> report.",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -98,3 +127,4 @@ private fun SettingCard(
         }
     }
 }
+
