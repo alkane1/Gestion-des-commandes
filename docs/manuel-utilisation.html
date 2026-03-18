@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Manuel d'utilisation - Gestion des commandes</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #172033;
+      margin: 0;
+      background: #f4f7fb;
+    }
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 56px 64px;
+      background: white;
+    }
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #0e7490;
+    }
+    h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 22px;
+      margin-top: 28px;
+      border-bottom: 2px solid #e8eef7;
+      padding-bottom: 8px;
+    }
+    h3 {
+      font-size: 18px;
+      margin-top: 22px;
+    }
+    p, li {
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .lead {
+      color: #475569;
+      margin-bottom: 24px;
+    }
+    .hero {
+      border-radius: 24px;
+      padding: 28px 30px;
+      background: linear-gradient(135deg, #0e7490 0%, #1d4ed8 100%);
+      color: white;
+      margin-bottom: 28px;
+    }
+    .hero h1, .hero p {
+      color: white;
+    }
+    .card {
+      background: #f8fbff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin: 16px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media print {
+      body {
+        background: white;
+      }
+      .page {
+        max-width: none;
+        margin: 0;
+        padding: 20px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <h1>Manuel d'utilisation</h1>
+      <p class="lead">Application Android de gestion de commandes et d'optimisation du remplissage de conteneurs.</p>
+    </div>
+
+    <h2>1. Presentation de l'application</h2>
+    <p><strong>Gestion_des_commandes</strong> est une application Android de demonstration qui permet de charger des commandes dans des conteneurs d'expedition tout en respectant des contraintes de poids, de volume et de priorite.</p>
+    <div class="card">
+      <p>L'application permet de consulter des commandes, configurer des conteneurs, calculer un plan d'expedition, comparer plusieurs solutions et consulter le detail des conteneurs.</p>
+    </div>
+
+    <h2>2. Ecrans principaux</h2>
+
+    <h3>2.1 Commandes</h3>
+    <ul>
+      <li>Afficher toutes les commandes generees.</li>
+      <li>Rechercher par identifiant ou note.</li>
+      <li>Filtrer par priorite.</li>
+      <li>Relancer une generation de commandes.</li>
+      <li>Declencher le calcul du plan.</li>
+    </ul>
+
+    <h3>2.2 Conteneurs</h3>
+    <ul>
+      <li>Definir la capacite poids maximale.</li>
+      <li>Definir la capacite volume maximale.</li>
+      <li>Definir le seuil minimal de remplissage.</li>
+      <li>Definir le nombre de conteneurs.</li>
+    </ul>
+
+    <h3>2.3 Plan</h3>
+    <ul>
+      <li>Afficher la recette totale, le remplissage moyen et les KPI.</li>
+      <li>Comparer plusieurs solutions de chargement.</li>
+      <li>Appliquer une solution proposee.</li>
+      <li>Consulter chaque conteneur.</li>
+    </ul>
+
+    <h3>2.4 Details</h3>
+    <ul>
+      <li>Detail commande : poids, volume, prix, priorite, note.</li>
+      <li>Detail conteneur : commandes, recette, remplissage, retour vers le plan.</li>
+    </ul>
+
+    <h2>3. Parcours d'utilisation recommande</h2>
+    <ol>
+      <li>Ouvrir l'ecran <strong>Commandes</strong>.</li>
+      <li>Verifier ou regenerer la liste.</li>
+      <li>Ouvrir <strong>Conteneurs</strong> et regler les capacites.</li>
+      <li>Enregistrer avec <strong>Sauvegarder</strong>.</li>
+      <li>Calculer le plan de chargement.</li>
+      <li>Comparer les solutions puis appliquer celle qui convient le mieux.</li>
+      <li>Ouvrir un conteneur pour consulter son detail.</li>
+    </ol>
+
+    <h2>4. Description de l'algorithme de remplissage</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Objectif</h3>
+        <p>Maximiser la recette expediee en respectant les contraintes de poids, de volume et de priorite.</p>
+      </div>
+      <div class="card">
+        <h3>Entrees</h3>
+        <p>Liste des commandes, configuration des conteneurs et parametres heuristiques.</p>
+      </div>
+    </div>
+
+    <h3>4.1 Phase 1 : creation des conteneurs</h3>
+    <p>L'application cree autant de conteneurs que la configuration le demande. Chaque conteneur a une capacite de poids et de volume.</p>
+
+    <h3>4.2 Phase 2 : priorisation des commandes</h3>
+    <p>Les commandes prioritaires (<strong>URGENT</strong> et <strong>ELEVEE</strong>) sont traitees avant les commandes normales.</p>
+
+    <h3>4.3 Phase 3 : placement glouton</h3>
+    <p>Chaque commande recoit un score base sur son prix, son poids, son volume et sa priorite. Les commandes les plus interessantes sont placees en premier dans le conteneur le plus adapte.</p>
+
+    <h3>4.4 Phase 4 : optimisation locale</h3>
+    <p>Une phase supplementaire teste des ajustements entre conteneurs pour ameliorer le resultat :</p>
+    <ul>
+      <li><strong>Move</strong> : deplacer une commande normale vers un autre conteneur.</li>
+      <li><strong>Swap</strong> : echanger deux commandes normales entre deux conteneurs.</li>
+    </ul>
+    <p>Une modification est conservee uniquement si elle ameliore le score global.</p>
+
+    <h3>4.5 Phase 5 : application du seuil minimal</h3>
+    <p>Un conteneur sous le seuil minimal est reporte s'il ne contient aucune commande prioritaire. A l'inverse, un conteneur avec priorite peut partir meme s'il est peu rempli.</p>
+
+    <h3>4.6 Resultat final</h3>
+    <p>Le plan final contient la liste des conteneurs expedies, les commandes expediees, les commandes reportees et la recette totale.</p>
+
+    <h2>5. Solutions proposees</h2>
+    <p>L'application calcule plusieurs variantes heuristiques :</p>
+    <ul>
+      <li>Equilibre</li>
+      <li>Poids prioritaire</li>
+      <li>Volume prioritaire</li>
+      <li>Prix agressif</li>
+    </ul>
+    <p>Chaque solution peut etre comparee selon la recette, le remplissage moyen et le nombre de reports.</p>
+
+    <h2>6. Sauvegarde locale</h2>
+    <p>Le theme clair/sombre et la configuration des conteneurs sont sauvegardes localement avec <strong>DataStore</strong>.</p>
+
+    <h2>7. Limites actuelles</h2>
+    <ul>
+      <li>Les commandes sont actuellement generees automatiquement.</li>
+      <li>Le moteur de remplissage est heuristique, pas un solveur mathematique exact.</li>
+      <li>Les commandes ne sont pas encore gerees via une base de donnees metier complete.</li>
+    </ul>
+
+    <h2>8. Conclusion</h2>
+    <p>L'application fournit une base claire et lisible pour simuler des plans d'expedition, comparer plusieurs solutions de chargement et expliquer les decisions prises par l'algorithme.</p>
+  </div>
+</body>
+</html>
