@@ -9,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gestiondescommandes.MainViewModel
+import com.example.gestiondescommandes.ui.components.AppOutlinedActionButton
 import com.example.gestiondescommandes.ui.components.PriorityChip
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +29,9 @@ fun OrderDetailScreenV2(vm: MainViewModel, orderId: String, onBack: () -> Unit) 
         topBar = {
             TopAppBar(
                 title = { Text("Detail") },
-                navigationIcon = { TextButton(onClick = onBack) { Text("Retour") } }
+                navigationIcon = {
+                    AppOutlinedActionButton(label = "Retour", onClick = onBack)
+                }
             )
         }
     ) { pad ->

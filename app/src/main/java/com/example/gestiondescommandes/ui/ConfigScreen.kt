@@ -11,12 +11,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -28,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gestiondescommandes.MainViewModel
+import com.example.gestiondescommandes.ui.components.AppFilledActionButton
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +43,7 @@ fun ConfigScreenV2(vm: MainViewModel, padding: PaddingValues) {
                     containerColor = MaterialTheme.colorScheme.background
                 ),
                 actions = {
-                    TextButton(onClick = { vm.updateConfig(cfg) }) { Text("Sauvegarder") }
+                    AppFilledActionButton(label = "Sauvegarder", onClick = { vm.updateConfig(cfg) })
                 }
             )
         }
@@ -100,13 +99,6 @@ fun ConfigScreenV2(vm: MainViewModel, padding: PaddingValues) {
                     valueRange = 1f..12f
                 )
             }
-
-            HorizontalDivider()
-
-            Text(
-                "Regles:\n- ELEVEE/URGENT partent immediatement.\n- Conteneur sans priorite et sous le seuil -> report.",
-                style = MaterialTheme.typography.bodyMedium
-            )
         }
     }
 }

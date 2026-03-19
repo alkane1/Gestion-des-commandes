@@ -39,8 +39,8 @@
       font-size: 14px;
     }
     .lead {
-      color: #475569;
-      margin-bottom: 24px;
+      color: #dbeafe;
+      margin-bottom: 0;
     }
     .hero {
       border-radius: 24px;
@@ -64,6 +64,25 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
     }
+    .figure {
+      margin: 18px 0 24px;
+      background: #f8fbff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 16px;
+    }
+    .figure img {
+      width: min(100%, 340px);
+      display: block;
+      margin: 0 auto;
+      border-radius: 16px;
+      background: #eaf1f8;
+    }
+    .caption {
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 13px;
+    }
     @media print {
       body {
         background: white;
@@ -83,15 +102,30 @@
       <p class="lead">Application Android de gestion de commandes et d'optimisation du remplissage de conteneurs.</p>
     </div>
 
-    <h2>1. Presentation de l'application</h2>
+    <h2>1. Presentation generale</h2>
     <p><strong>Gestion_des_commandes</strong> est une application Android de demonstration qui permet de charger des commandes dans des conteneurs d'expedition tout en respectant des contraintes de poids, de volume et de priorite.</p>
     <div class="card">
-      <p>L'application permet de consulter des commandes, configurer des conteneurs, calculer un plan d'expedition, comparer plusieurs solutions et consulter le detail des conteneurs.</p>
+      <p>L'application permet de consulter des commandes, configurer des conteneurs, calculer un plan d'expedition, comparer plusieurs solutions, presenter des resultats de projet et consulter le detail des conteneurs.</p>
     </div>
 
-    <h2>2. Ecrans principaux</h2>
+    <h2>2. Captures d'ecran du parcours utilisateur</h2>
 
-    <h3>2.1 Commandes</h3>
+    <h3>2.1 Accueil</h3>
+    <div class="figure">
+      <img src="screenshots/home.png" alt="Illustration ecran Accueil">
+      <div class="caption">Vue d'ensemble du projet, KPI principaux et acces rapide aux pages de presentation.</div>
+    </div>
+    <ul>
+      <li>Vue globale du projet.</li>
+      <li>Resume operationnel du dernier plan calcule.</li>
+      <li>Acces rapide aux pages Resultats, A propos et Manuel.</li>
+    </ul>
+
+    <h3>2.2 Commandes</h3>
+    <div class="figure">
+      <img src="screenshots/commandes.png" alt="Illustration ecran Commandes">
+      <div class="caption">Capture reelle de l'ecran Commandes avec la recherche, les filtres et les actions Regenerer et Calculer.</div>
+    </div>
     <ul>
       <li>Afficher toutes les commandes generees.</li>
       <li>Rechercher par identifiant ou note.</li>
@@ -100,7 +134,11 @@
       <li>Declencher le calcul du plan.</li>
     </ul>
 
-    <h3>2.2 Conteneurs</h3>
+    <h3>2.3 Configuration</h3>
+    <div class="figure">
+      <img src="screenshots/conteneurs.png" alt="Illustration ecran Config">
+      <div class="caption">Capture reelle de l'ecran Conteneurs avec les reglages de capacite et le bouton Sauvegarder.</div>
+    </div>
     <ul>
       <li>Definir la capacite poids maximale.</li>
       <li>Definir la capacite volume maximale.</li>
@@ -108,7 +146,11 @@
       <li>Definir le nombre de conteneurs.</li>
     </ul>
 
-    <h3>2.3 Plan</h3>
+    <h3>2.4 Plan</h3>
+    <div class="figure">
+      <img src="screenshots/plan.png" alt="Illustration ecran Plan">
+      <div class="caption">Capture reelle de l'ecran Plan avec la recette totale, les KPI et les conteneurs calcules.</div>
+    </div>
     <ul>
       <li>Afficher la recette totale, le remplissage moyen et les KPI.</li>
       <li>Comparer plusieurs solutions de chargement.</li>
@@ -116,21 +158,23 @@
       <li>Consulter chaque conteneur.</li>
     </ul>
 
-    <h3>2.4 Details</h3>
-    <ul>
-      <li>Detail commande : poids, volume, prix, priorite, note.</li>
-      <li>Detail conteneur : commandes, recette, remplissage, retour vers le plan.</li>
-    </ul>
+    <h3>2.5 Resultats du projet</h3>
+    <div class="figure">
+      <img src="screenshots/results-screen.svg" alt="Illustration ecran Resultats">
+      <div class="caption">Page de soutenance avec les indicateurs cles et le rappel des ecrans a presenter.</div>
+    </div>
 
     <h2>3. Parcours d'utilisation recommande</h2>
     <ol>
-      <li>Ouvrir l'ecran <strong>Commandes</strong>.</li>
+      <li>Ouvrir l'ecran <strong>Accueil</strong>.</li>
+      <li>Verifier le contexte general puis ouvrir <strong>Commandes</strong>.</li>
       <li>Verifier ou regenerer la liste.</li>
       <li>Ouvrir <strong>Conteneurs</strong> et regler les capacites.</li>
       <li>Enregistrer avec <strong>Sauvegarder</strong>.</li>
       <li>Calculer le plan de chargement.</li>
       <li>Comparer les solutions puis appliquer celle qui convient le mieux.</li>
       <li>Ouvrir un conteneur pour consulter son detail.</li>
+      <li>Terminer par <strong>Resultats du projet</strong> pour la synthese.</li>
     </ol>
 
     <h2>4. Description de l'algorithme de remplissage</h2>
@@ -181,15 +225,24 @@
     <h2>6. Sauvegarde locale</h2>
     <p>Le theme clair/sombre et la configuration des conteneurs sont sauvegardes localement avec <strong>DataStore</strong>.</p>
 
-    <h2>7. Limites actuelles</h2>
+    <h2>7. Conseils pour la soutenance</h2>
+    <div class="card">
+      <p>Ordre recommande : Accueil, Commandes, Config, Plan, Resultats du projet.</p>
+      <p>Les visuels du dossier <strong>docs/screenshots</strong> peuvent etre remplaces par de vraies captures exportees depuis l'emulateur.</p>
+    </div>
+
+    <h2>8. Limites actuelles</h2>
     <ul>
       <li>Les commandes sont actuellement generees automatiquement.</li>
       <li>Le moteur de remplissage est heuristique, pas un solveur mathematique exact.</li>
       <li>Les commandes ne sont pas encore gerees via une base de donnees metier complete.</li>
     </ul>
 
-    <h2>8. Conclusion</h2>
+    <h2>9. Conclusion</h2>
     <p>L'application fournit une base claire et lisible pour simuler des plans d'expedition, comparer plusieurs solutions de chargement et expliquer les decisions prises par l'algorithme.</p>
   </div>
 </body>
 </html>
+
+
+

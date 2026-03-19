@@ -61,12 +61,20 @@ object Packing {
             .distinctBy { it.id }
             .filter { it.id !in shippedIds }
 
+        val deferredReasons = buildDeferredReasons(
+            deferred = deferred,
+            remaining = remainingAll,
+            deferredFromLowFill = deferredFromLowFill,
+            config = config
+        )
+
         val revenue = finalContainers.sumOf { it.revenueEur }
 
         return ShipmentPlan(
             containers = finalContainers,
             shippedOrders = shipped,
             deferredOrders = deferred,
+            deferredReasons = deferredReasons,
             totalRevenueEur = round2(revenue)
         )
     }
@@ -322,6 +330,39 @@ object Packing {
             (shippedCount * 10.0) -
             (lowFillContainers * 5.0) +
             avgFill
+    }
+
+    private fun buildDeferredReasons(
+        deferred: List<Order>,
+        remaining: List<Order>,
+        deferredFromLowFill: List<Order>,
+        config: ContainerConfig
+    ): Map<String, String> {
+        val reasons = mutableMapOf<String, String>()
+
+        deferredFromLowFill.forEach { order ->
+            reasons[order.id] = "Reportee: conteneur sous le seuil minimal de remplissage"
+        }
+
+        remaining.forEach { order ->
+            reasons[order.id] = when {
+                order.weightKg > config.maxWeightKg ->
+                    "Reportee: poids superieur a la capacite maximale d'un conteneur"
+
+                order.volumeM3 > config.maxVolumeM3 ->
+                    "Reportee: volume superieur a la capacite maximale d'un conteneur"
+
+                order.priority != Priority.NORMAL ->
+                    "Reportee: capacite insuffisante malgre la priorite"
+
+                else ->
+                    "Reportee: aucune place disponible apres priorisation et optimisation"
+            }
+        }
+
+        return deferred.associate { order ->
+            order.id to (reasons[order.id] ?: "Reportee: raison non determinee")
+        }
     }
 
     private fun round2(x: Double) = kotlin.math.round(x * 100.0) / 100.0

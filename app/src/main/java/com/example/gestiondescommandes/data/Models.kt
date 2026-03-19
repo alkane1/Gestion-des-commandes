@@ -34,5 +34,6 @@ data class ShipmentPlan(
     val containers: List<ShipmentContainer>,
     val shippedOrders: List<Order>,
     val deferredOrders: List<Order>,
+    val deferredReasons: Map<String, String> = emptyMap(),
     val totalRevenueEur: Double
 )

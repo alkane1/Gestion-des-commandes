@@ -1,197 +1,207 @@
 # Manuel d'utilisation
 
-## 1. Presentation de l'application
+## 1. Presentation generale
 
-`Gestion_des_commandes` est une application Android de demonstration pour organiser des commandes dans des conteneurs d'expedition.
+`Gestion_des_commandes` est une application Android de demonstration concue pour simuler l'organisation de commandes dans des conteneurs d'expedition.
 
 L'application permet de :
 
-- consulter une liste de commandes generees automatiquement
-- filtrer et rechercher les commandes
-- regler les parametres des conteneurs
+- consulter un jeu de commandes de demonstration
+- filtrer et rechercher rapidement les commandes
+- regler la capacite des conteneurs
 - calculer un plan de chargement
-- comparer plusieurs solutions de chargement
-- visualiser le detail des conteneurs et des commandes
+- comparer plusieurs solutions heuristiques
+- visualiser les conteneurs, les commandes expediees et les reports
+- presenter des resultats de projet lors d'une soutenance
 
-L'objectif principal est de maximiser la valeur expediee tout en respectant les contraintes de poids, de volume et de priorite.
+Objectif principal :
 
-## 2. Ecrans principaux
+- maximiser la valeur expediee
+- respecter les contraintes de poids et de volume
+- conserver une logique metier basee sur la priorite
+- limiter les departs de conteneurs insuffisamment remplis
 
-### 2.1 Ecran Commandes
+## 2. Captures d'ecran du parcours utilisateur
 
-Cet ecran est le point d'entree principal.
+### 2.1 Ecran Accueil
+
+![Illustration ecran Accueil](screenshots/home-overview.svg)
+
+L'ecran `Accueil` donne une vue d'ensemble du projet :
+
+- nombre total de commandes
+- nombre de commandes urgentes et elevees
+- configuration active des conteneurs
+- resume operationnel du dernier plan calcule
+- acces rapide a `Resultats`, `A propos` et `Manuel`
+
+### 2.2 Ecran Commandes
+
+![Illustration ecran Commandes](screenshots/commandes.png)
+
+L'ecran `Commandes` presente la liste des commandes disponibles avec recherche, filtres et actions principales.
 
 Fonctions disponibles :
 
 - afficher la liste des commandes
-- rechercher une commande par identifiant ou par note
+- rechercher une commande par identifiant ou note
 - filtrer par priorite : `Toutes`, `Urgent`, `Elevee`, `Normale`
-- regenerer un nouveau jeu de commandes
-- lancer le calcul du plan
-- activer ou desactiver le theme sombre
+- regenerer un jeu de donnees de demonstration
+- lancer l'acces au plan de chargement
 
 Chaque carte de commande affiche :
 
-- l'identifiant de la commande
-- sa priorite
-- son poids
-- son volume
-- sa valeur en euros
-- l'indication `Fragile` si besoin
+- l'identifiant
+- la priorite
+- le poids
+- le volume
+- la valeur en euros
+- l'information `Fragile` si necessaire
 
-### 2.2 Ecran Conteneurs
+### 2.3 Ecran Configuration
 
-Cet ecran permet de configurer les regles de chargement.
+![Illustration ecran Config](screenshots/conteneurs.png)
 
-Parametres disponibles :
+L'ecran `Config` permet de definir les regles de chargement :
 
 - capacite poids maximale par conteneur
 - capacite volume maximale par conteneur
 - seuil minimal de remplissage
 - nombre total de conteneurs
 
-Le bouton `Sauvegarder` enregistre ces preferences localement. Elles sont restaurees automatiquement lors du prochain lancement.
+La capture montre le reglage des capacites poids, volume, du seuil minimal et du nombre de conteneurs. Le bouton `Sauvegarder` enregistre ces preferences localement avec `DataStore`.
 
-### 2.3 Ecran Plan
+### 2.4 Ecran Plan
 
-Cet ecran presente le resultat du calcul.
+![Illustration ecran Plan](screenshots/plan.png)
 
-Elements affiches :
+La capture du `Plan` montre les KPI principaux, la recette totale, le remplissage moyen et la liste des conteneurs calcules.
+
+L'ecran `Plan` presente le resultat du calcul :
 
 - recette totale estimee
-- nombre de conteneurs
 - nombre de commandes expediees
 - nombre de commandes reportees
-- remplissage moyen
 - solutions proposees
-- liste detaillee des conteneurs
-- apercu des commandes reportees
+- liste des conteneurs
+- acces au detail avec le bouton `Voir`
 
 Depuis cet ecran, l'utilisateur peut :
 
 - recalculer un plan
-- demander plusieurs solutions
-- appliquer une solution proposee
-- ouvrir le detail d'un conteneur avec le bouton `Voir`
+- comparer les variantes de calcul
+- appliquer une solution
+- verifier les raisons de report
+- ouvrir le detail d'un conteneur
 
-### 2.4 Ecran Detail commande
+### 2.5 Ecran Resultats du projet
 
-Cet ecran affiche une commande unique avec :
+![Illustration ecran Resultats](screenshots/results-screen.svg)
 
-- son identifiant
-- sa priorite
-- son poids
-- son volume
-- son prix
-- son statut fragile
-- sa note
+Cet ecran a ete ajoute pour une soutenance ou une demonstration. Il rassemble :
 
-### 2.5 Ecran Detail conteneur
-
-Cet ecran reprend les informations d'un conteneur :
-
-- commandes presentes
-- recette
-- taux de remplissage poids et volume
-- bouton `Retour` pour revenir au plan
+- les KPI principaux du projet
+- un resume des performances observees
+- des rappels sur les captures pertinentes a presenter
 
 ## 3. Parcours d'utilisation recommande
 
-1. Aller dans l'ecran `Commandes`.
-2. Verifier ou regenerer les commandes.
-3. Ouvrir l'ecran `Conteneurs`.
-4. Ajuster les capacites et le seuil de remplissage.
-5. Sauvegarder la configuration.
-6. Revenir au plan ou lancer le calcul depuis l'ecran `Commandes`.
-7. Consulter les solutions proposees.
-8. Appliquer la solution la plus interessante.
-9. Ouvrir les conteneurs pour verifier le detail du chargement.
+1. Ouvrir l'ecran `Accueil` pour verifier la configuration generale.
+2. Aller dans `Commandes` pour consulter ou regenerer le jeu de donnees.
+3. Utiliser la recherche et les filtres pour analyser les priorites.
+4. Ouvrir `Config` pour ajuster les capacites et le seuil minimal.
+5. Enregistrer avec `Sauvegarder`.
+6. Revenir au `Plan` pour lancer ou consulter le calcul.
+7. Comparer les solutions proposees.
+8. Appliquer la solution la plus pertinente.
+9. Ouvrir un conteneur avec `Voir` pour controler son contenu.
+10. Consulter `Resultats du projet` pour une presentation synthese.
 
 ## 4. Description de l'algorithme de remplissage
 
-## 4.1 Objectif
+### 4.1 Objectif
 
 L'algorithme cherche a construire un plan de chargement qui :
 
 - respecte les capacites de poids et de volume
 - expedie les commandes prioritaires en premier
 - maximise la recette expediee
-- evite d'envoyer des conteneurs trop peu remplis si aucune priorite ne l'impose
+- evite les departs peu remplis lorsqu'aucune priorite ne l'impose
 
-## 4.2 Donnees d'entree
+### 4.2 Donnees d'entree
 
 L'algorithme utilise :
 
 - la liste des commandes
 - la configuration des conteneurs
-- une heuristique de score
+- un ensemble de coefficients heuristiques
 
-Chaque commande contient :
+Chaque commande possede au minimum :
 
 - un poids
 - un volume
 - un prix
 - une priorite
 
-## 4.3 Etape 1 : creation des conteneurs
+### 4.3 Etape 1 : creation des conteneurs
 
-Le systeme cree autant de conteneurs que defini par `containerCount`.
+Le systeme cree autant de conteneurs que la valeur `containerCount`.
 
-Chaque conteneur possede :
+Chaque conteneur dispose de :
 
 - une capacite maximale de poids
 - une capacite maximale de volume
 - une liste de commandes chargees
 
-## 4.4 Etape 2 : tri des commandes prioritaires
+### 4.4 Etape 2 : priorisation des commandes
 
 Les commandes sont separees en deux groupes :
 
 - prioritaires : `URGENT` et `ELEVEE`
 - normales
 
-Les commandes prioritaires sont traitees avant les commandes normales.
+Les prioritaires sont traitees avant les normales.
 
-## 4.5 Etape 3 : placement glouton
+### 4.5 Etape 3 : placement glouton
 
-L'algorithme utilise une premiere phase dite "greedy".
+Une premiere phase dite `greedy` est appliquee.
 
 Pour chaque commande :
 
 - un score est calcule a partir du prix, du poids, du volume et de la priorite
-- les commandes avec le meilleur score sont traitees d'abord
+- les commandes les mieux classees sont traitees d'abord
 - la commande est placee dans le conteneur qui l'accueille au mieux sans depasser les limites
 
-Une commande qui ne rentre dans aucun conteneur est marquee comme restante.
+Si aucune place n'est possible, la commande est marquee comme reportee.
 
-## 4.6 Etape 4 : optimisation locale
+### 4.6 Etape 4 : optimisation locale
 
-Une seconde phase d'amelioration est appliquee.
+Une seconde phase essaie d'ameliorer le resultat initial.
 
-Elle teste des modifications locales entre conteneurs :
+Deux types d'operations sont testes :
 
 - `move` : deplacer une commande normale d'un conteneur vers un autre
 - `swap` : echanger deux commandes normales entre deux conteneurs
 
-Ces operations sont conservees seulement si elles ameliorent le score global.
+Une operation est conservee uniquement si elle ameliore le score global.
 
 Le score favorise :
 
 - la recette expediee
 - le nombre de commandes expediees
-- un meilleur remplissage moyen
-- moins de conteneurs faiblement remplis
+- le remplissage moyen
+- la reduction des conteneurs insuffisamment remplis
 
-## 4.7 Etape 5 : application de la regle de seuil
+### 4.7 Etape 5 : application du seuil minimal
 
-Une fois le chargement termine :
+Apres chargement :
 
-- si un conteneur contient une commande prioritaire, il peut partir meme si son remplissage est faible
-- si un conteneur ne contient aucune priorite et reste sous le seuil minimal, ses commandes sont reportees
+- un conteneur contenant une commande prioritaire peut partir meme avec un faible remplissage
+- un conteneur sans priorite sous le seuil minimal voit ses commandes reportees
 
-## 4.8 Resultat final
+### 4.8 Resultat final
 
-Le resultat est un `ShipmentPlan` contenant :
+Le resultat est un `ShipmentPlan` qui contient :
 
 - la liste des conteneurs expedies
 - la liste des commandes expediees
@@ -200,22 +210,20 @@ Le resultat est un `ShipmentPlan` contenant :
 
 ## 5. Solutions proposees
 
-L'application peut proposer plusieurs variantes de calcul :
+L'application peut calculer plusieurs variantes :
 
 - `Equilibre`
 - `Poids prioritaire`
 - `Volume prioritaire`
 - `Prix agressif`
 
-Chaque solution utilise des coefficients heuristiques differents.
-
-L'utilisateur peut comparer :
+Chaque solution modifie les coefficients de l'heuristique. L'utilisateur peut comparer :
 
 - la recette
 - le remplissage moyen
 - le nombre de reports
 
-puis appliquer la solution la plus adaptee.
+Puis appliquer la solution la plus adaptee.
 
 ## 6. Sauvegarde locale
 
@@ -224,23 +232,38 @@ L'application sauvegarde localement :
 - le theme clair ou sombre
 - la configuration des conteneurs
 
-Cette sauvegarde est geree avec `DataStore`.
+Cette persistance est geree avec `DataStore`.
 
-## 7. Limites actuelles
+## 7. Conseils pour la soutenance
+
+Pour une presentation orale, il est recommande d'afficher dans cet ordre :
+
+1. l'ecran `Accueil` pour poser le contexte
+2. l'ecran `Commandes` pour montrer les donnees et les filtres
+3. l'ecran `Config` pour expliquer les contraintes
+4. l'ecran `Plan` pour presenter le coeur de l'algorithme
+5. l'ecran `Resultats du projet` pour conclure avec les KPI
+
+Les visuels du dossier `docs/screenshots` peuvent etre remplaces a tout moment par de vraies captures exportees depuis l'emulateur.
+
+## 8. Limites actuelles
 
 Version actuelle :
 
-- les commandes sont generees automatiquement
+- les commandes restent issues d'un jeu de demonstration
 - il n'y a pas encore de base de donnees metier persistante pour les commandes
-- l'algorithme reste heuristique et non optimal mathematiquement
+- l'algorithme reste heuristique et non mathematiquement optimal
 
-## 8. Conclusion
+## 9. Conclusion
 
 L'application fournit une base claire pour simuler, comparer et visualiser des plans de chargement de commandes dans des conteneurs.
 
 Elle combine :
 
-- une interface mobile moderne
+- une interface mobile responsive
 - une configuration simple
 - une logique de priorisation metier
-- une heuristique de remplissage enrichie par une optimisation locale
+- une heuristique de remplissage renforcee par optimisation locale
+- un support de presentation avec ecran `Resultats du projet`
+
+

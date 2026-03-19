@@ -1,6 +1,7 @@
 ﻿package com.example.gestiondescommandes.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
@@ -40,6 +41,11 @@ fun AppNav(vm: MainViewModel) {
 
     val tabs = listOf(
         Dest(
+            route = "home",
+            label = "Accueil",
+            icon = { Icon(Icons.Filled.Home, contentDescription = null) }
+        ),
+        Dest(
             route = "orders",
             label = "Commandes",
             icon = {
@@ -53,7 +59,7 @@ fun AppNav(vm: MainViewModel) {
                         }
                     }
                 ) {
-                    Icon(Icons.Filled.Home, contentDescription = null)
+                    Icon(Icons.Filled.Description, contentDescription = null)
                 }
             }
         ),
@@ -76,7 +82,7 @@ fun AppNav(vm: MainViewModel) {
     )
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route?.substringBefore("/") ?: "orders"
+    val currentRoute = backStackEntry?.destination?.route?.substringBefore("/") ?: "home"
     val isTabRoute = tabs.any { it.route == currentRoute }
 
     Scaffold(
@@ -103,9 +109,18 @@ fun AppNav(vm: MainViewModel) {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "orders",
+            startDestination = "home",
             modifier = Modifier
         ) {
+            composable("home") {
+                HomeScreenV2(
+                    vm = vm,
+                    padding = paddingValues,
+                    onOpenAbout = { navController.navigate("about") },
+                    onOpenManual = { navController.navigate("manual") }
+                )
+            }
+
             composable("orders") {
                 OrdersListScreenV2(
                     vm = vm,
@@ -148,6 +163,21 @@ fun AppNav(vm: MainViewModel) {
 
             composable("plan") {
                 PlanScreenV2(vm = vm, padding = paddingValues, navController = navController)
+            }
+
+            composable("about") {
+                AboutScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable("manual") {
+                ManualScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable("deferred-orders") {
+                DeferredOrdersScreen(
+                    vm = vm,
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
     }

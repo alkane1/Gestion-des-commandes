@@ -1,27 +1,32 @@
 package com.example.gestiondescommandes.ui
-
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.Scale
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -29,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,7 +42,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.gestiondescommandes.MainViewModel
+import com.example.gestiondescommandes.data.Order
 import com.example.gestiondescommandes.data.ShipmentContainer
+import com.example.gestiondescommandes.ui.components.AppFilledActionButton
+import com.example.gestiondescommandes.ui.components.AppOutlinedActionButton
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,17 +57,19 @@ fun PlanScreenV2(
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val plan = state.currentPlan
+    val configuration = LocalConfiguration.current
+    val compact = configuration.screenWidthDp < 420
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Plan") },
+                title = { Text("Plan d'expedition") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
                 actions = {
-                    TextButton(onClick = { vm.buildShipmentPlan() }) { Text("Recalcul") }
-                    TextButton(onClick = { vm.proposeSolutions(3) }) { Text("Solutions") }
+                    AppOutlinedActionButton(label = "Recalcul", onClick = { vm.buildShipmentPlan() })
+                    AppFilledActionButton(label = "Solutions", onClick = { vm.proposeSolutions(3) })
                 }
             )
         }
@@ -83,18 +94,14 @@ fun PlanScreenV2(
             else -> Color(0xFF2E7D32)
         }
 
-        BoxWithConstraints(
+        LazyColumn(
             modifier = Modifier
                 .padding(padding)
                 .padding(inner)
                 .padding(12.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            val compact = maxWidth < 420.dp
-
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
                 item {
                     Spacer(Modifier.height(2.dp))
                     Card(
@@ -156,14 +163,6 @@ fun PlanScreenV2(
                     }
                 }
 
-                item {
-                    SummaryCard(
-                        revenue = plan.totalRevenueEur,
-                        shipped = plan.shippedOrders.size,
-                        deferred = plan.deferredOrders.size
-                    )
-                }
-
                 if (state.solutions.isNotEmpty()) {
                     val activeSolution = state.solutions.firstOrNull { it.first == state.selectedSolutionName }?.second
                         ?: plan
@@ -206,8 +205,13 @@ fun PlanScreenV2(
                                                     "Delta: ${formatSigned(revenueDelta)} EUR | ${formatSigned(fillDeltaPoints)} pts | reports ${formatSigned(reportsGain.toDouble())}",
                                                     style = MaterialTheme.typography.labelSmall
                                                 )
-                                                TextButton(onClick = { vm.applySolution(name) }) {
-                                                    Text(if (isSelected) "Active" else "Appliquer cette solution")
+                                                if (isSelected) {
+                                                    AppOutlinedActionButton(label = "Active", onClick = { })
+                                                } else {
+                                                    AppFilledActionButton(
+                                                        label = "Appliquer",
+                                                        onClick = { vm.applySolution(name) }
+                                                    )
                                                 }
                                             }
                                         } else {
@@ -232,8 +236,13 @@ fun PlanScreenV2(
                                                         style = MaterialTheme.typography.labelSmall
                                                     )
                                                 }
-                                                TextButton(onClick = { vm.applySolution(name) }) {
-                                                    Text(if (isSelected) "Active" else "Appliquer cette solution")
+                                                if (isSelected) {
+                                                    AppOutlinedActionButton(label = "Active", onClick = { })
+                                                } else {
+                                                    AppFilledActionButton(
+                                                        label = "Appliquer",
+                                                        onClick = { vm.applySolution(name) }
+                                                    )
                                                 }
                                             }
                                         }
@@ -259,17 +268,16 @@ fun PlanScreenV2(
                 }
 
                 item {
-                    Spacer(Modifier.height(8.dp))
-                    HorizontalDivider()
-                    Spacer(Modifier.height(8.dp))
-                    Text("Reportees (apercu):", style = MaterialTheme.typography.titleSmall)
-                    plan.deferredOrders.take(10).forEach { o ->
-                        Text("- ${o.id} (${o.priority.toFrenchLabel()}) - ${o.priceEur} EUR")
-                    }
-                    if (plan.deferredOrders.size > 10) Text("... +${plan.deferredOrders.size - 10} autres")
-                    Spacer(Modifier.height(8.dp))
+                    DeferredOrdersSection(
+                        deferredOrders = plan.deferredOrders,
+                        deferredReasons = plan.deferredReasons,
+                        onOpenAll = if (plan.deferredOrders.isNotEmpty()) {
+                            { navController.navigate("deferred-orders") }
+                        } else {
+                            null
+                        }
+                    )
                 }
-            }
         }
     }
 }
@@ -310,13 +318,266 @@ private fun KpiCard(
 }
 
 @Composable
-private fun SummaryCard(revenue: Double, shipped: Int, deferred: Int) {
-    Card(shape = MaterialTheme.shapes.large, elevation = CardDefaults.cardElevation(4.dp)) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("Resume expedition", style = MaterialTheme.typography.titleSmall)
-            Text("Recette: $revenue EUR", style = MaterialTheme.typography.titleMedium)
-            Text("Expediees: $shipped | Reportees: $deferred")
+private fun DeferredOrdersSection(
+    deferredOrders: List<Order>,
+    deferredReasons: Map<String, String>,
+    onOpenAll: (() -> Unit)? = null
+) {
+    Card(
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text("Commandes reportees", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "Apercu des commandes non expediees dans ce plan",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            if (onOpenAll != null && deferredOrders.isNotEmpty()) {
+                AppOutlinedActionButton(
+                    label = "Voir toutes",
+                    onClick = onOpenAll
+                )
+            }
+
+            if (deferredOrders.isEmpty()) {
+                Card(
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text("Aucune commande reportee", style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            "Toutes les commandes retenues par le plan ont pu etre expediees.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                deferredOrders.take(10).forEach { order ->
+                    DeferredOrderCard(
+                        order = order,
+                        reason = deferredReasons[order.id] ?: "Reportee"
+                    )
+                }
+
+                if (deferredOrders.size > 10) {
+                    Text(
+                        "... +${deferredOrders.size - 10} autre(s)",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun DeferredOrderCard(
+    order: Order,
+    reason: String
+) {
+    val reasonStyle = rememberDeferredReasonStyle(reason)
+    Card(
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(order.id, style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        order.note.ifBlank { "Commande reportee" },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+                AssistChip(
+                    onClick = {},
+                    label = { Text(order.priority.toFrenchLabel()) }
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                DeferredMetric("Poids", "${order.weightKg} kg", Modifier.weight(1f))
+                DeferredMetric("Volume", "${order.volumeM3} m3", Modifier.weight(1f))
+                DeferredMetric("Valeur", "${order.priceEur} EUR", Modifier.weight(1f))
+            }
+
+            Card(
+                shape = MaterialTheme.shapes.small,
+                colors = CardDefaults.cardColors(
+                    containerColor = reasonStyle.containerColor
+                ),
+                border = BorderStroke(1.dp, reasonStyle.borderColor)
+            ) {
+                Row(
+                    modifier = Modifier.padding(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = reasonStyle.icon,
+                        contentDescription = null,
+                        tint = reasonStyle.iconTint
+                    )
+                    Text(
+                        reason,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DeferredMetric(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        Text(
+            title,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeferredOrdersScreen(
+    vm: MainViewModel,
+    onBack: () -> Unit
+) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val plan = state.currentPlan
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Toutes les reportees") },
+                navigationIcon = {
+                    AppOutlinedActionButton(label = "Retour", onClick = onBack)
+                }
+            )
+        }
+    ) { pad ->
+        if (plan == null) {
+            Column(
+                modifier = Modifier
+                    .padding(pad)
+                    .padding(16.dp)
+            ) {
+                Text("Aucun plan disponible.")
+            }
+            return@Scaffold
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(pad)
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            item {
+                DeferredOrdersSection(
+                    deferredOrders = plan.deferredOrders,
+                    deferredReasons = plan.deferredReasons
+                )
+            }
+        }
+    }
+}
+
+private data class DeferredReasonStyle(
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val containerColor: Color,
+    val borderColor: Color,
+    val iconTint: Color
+)
+
+@Composable
+private fun rememberDeferredReasonStyle(reason: String): DeferredReasonStyle {
+    val lower = reason.lowercase()
+    return when {
+        "poids" in lower -> DeferredReasonStyle(
+            icon = Icons.Filled.Scale,
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.55f),
+            borderColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.45f),
+            iconTint = MaterialTheme.colorScheme.tertiary
+        )
+        "volume" in lower -> DeferredReasonStyle(
+            icon = Icons.Filled.Inventory2,
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.55f),
+            borderColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.45f),
+            iconTint = MaterialTheme.colorScheme.secondary
+        )
+        "priorite" in lower || "place disponible" in lower -> DeferredReasonStyle(
+            icon = Icons.Filled.LocalShipping,
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
+            borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f),
+            iconTint = MaterialTheme.colorScheme.primary
+        )
+        else -> DeferredReasonStyle(
+            icon = Icons.Filled.WarningAmber,
+            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.45f),
+            borderColor = MaterialTheme.colorScheme.error.copy(alpha = 0.35f),
+            iconTint = MaterialTheme.colorScheme.error
+        )
     }
 }
 
@@ -326,71 +587,27 @@ fun ContainerCardV2(
     onOpen: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val compact = c.orders.size > 9
 
     Card(
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(3.dp)
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            BoxWithConstraints {
-                val smallWidth = maxWidth < 360.dp
-                if (smallWidth || compact) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Column {
-                            Text("Conteneur #${c.index + 1}", style = MaterialTheme.typography.titleSmall)
-                            Text(
-                                "Recette: ${c.revenueEur} EUR | Commandes: ${c.orders.size}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                            TextButton(onClick = { expanded = !expanded }) {
-                                Text(
-                                    if (expanded) "Reduire" else "Details",
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            TextButton(onClick = { onOpen(c.index) }) {
-                                Text(
-                                    "Voir",
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Column {
-                            Text("Conteneur #${c.index + 1}", style = MaterialTheme.typography.titleSmall)
-                            Text(
-                                "Recette: ${c.revenueEur} EUR | Commandes: ${c.orders.size}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                        Row {
-                            TextButton(onClick = { expanded = !expanded }) {
-                                Text(
-                                    if (expanded) "Reduire" else "Details",
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            TextButton(onClick = { onOpen(c.index) }) {
-                                Text(
-                                    "Voir",
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
-                    }
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Conteneur n°${c.index + 1}", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    "Recette: ${c.revenueEur} EUR | Commandes: ${c.orders.size}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    AppOutlinedActionButton(
+                        label = if (expanded) "Reduire" else "Details",
+                        onClick = { expanded = !expanded }
+                    )
+                    AppFilledActionButton(
+                        label = "Voir",
+                        onClick = { onOpen(c.index) }
+                    )
                 }
             }
 
@@ -424,6 +641,5 @@ fun ContainerCardV2(
         }
     }
 }
-
 
 
